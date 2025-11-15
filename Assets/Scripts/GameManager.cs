@@ -7,12 +7,14 @@ public class GameManager : MonoBehaviour
 
     public GameObject enemyOnePrefab; //og enemy
     public GameObject enemyTwoPrefab; //DVD enemy
+    public GameObject CoinPrefab; //DVD enemy
 
     // Start is called before the first frame update
     void Start()
     {
         InvokeRepeating("CreateEnemyOne", 1, 2);
         InvokeRepeating("CreateEnemyTwo", 4, 5); //spawn new enemy type
+        InvokeRepeating("CreateCoin", 1, 2); //spawn coins
     }
 
     // Update is called once per frame
@@ -27,5 +29,9 @@ public class GameManager : MonoBehaviour
     }
     void CreateEnemyTwo()
     { Instantiate(enemyTwoPrefab, new Vector3(Random.Range(-9f, 9f), 6.5f, 0), Quaternion.identity); 
+    }
+    void CreateCoin()
+    {
+        Instantiate(CoinPrefab, new Vector3(Random.Range(-9f, 9f), 6.5f, 0), Quaternion.identity);
     }
 }

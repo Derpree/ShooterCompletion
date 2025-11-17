@@ -7,7 +7,7 @@ public class GameManager : MonoBehaviour
 
     public GameObject enemyOnePrefab; //og enemy
     public GameObject enemyTwoPrefab; //DVD enemy
-    public GameObject CoinPrefab; //DVD enemy
+    public GameObject CoinPrefab; //coin (functioning like enemy)
 
     // Start is called before the first frame update
     void Start()
@@ -32,6 +32,8 @@ public class GameManager : MonoBehaviour
     }
     void CreateCoin()
     {
-        Instantiate(CoinPrefab, new Vector3(Random.Range(-9f, 9f), 6.5f, 0), Quaternion.identity);
+        float randomX = Random.Range(-9f, 9f); // horizontal
+        float randomY = Random.Range(-4f, 0f); // within player's range
+        Instantiate(CoinPrefab, new Vector3(randomX, randomY, 0), Quaternion.identity);
     }
 }

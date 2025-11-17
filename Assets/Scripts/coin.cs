@@ -5,18 +5,9 @@ using UnityEngine;
 public class Coin : MonoBehaviour
 
 {
-    // Start is called before the first frame update
+    public float lifetime = 4f; //sec player has to collect
     void Start()
     {
-
+        Destroy(gameObject, lifetime); //coin is destroyed based on lifetime
     }
-    // Update is called once per frame
-    void Update()
-    {
-        transform.Translate(new Vector3(0, -1, 0) * Time.deltaTime * 3f); //need to change
-        if (transform.position.y < -6.5f)
-        {
-            Destroy(this.gameObject);
-        }
-    }
-}
+ }

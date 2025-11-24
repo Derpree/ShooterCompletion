@@ -1,16 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    //how to define a variable
-    //1. access modifier: public or private
-    //2. data type: int, float, bool, string
-    //3. variable name: camelCase
-    //4. value: optional
-
-    private float playerSpeed;
+    private float playerSpeed = 8f;
     private float horizontalInput;
     private float verticalInput;
 
@@ -18,27 +10,32 @@ public class Player : MonoBehaviour
     private float verticalScreenLimit = 6.5f;
 
     public GameObject bulletPrefab;
+    public GameObject shieldObj;
+
+    private AudioSource audioSource;
+    private AudioClip ascentClip;
+    private AudioClip descentClip;
 
     void Start()
     {
-        //increased player speed from 6 to 8
-        playerSpeed = 8f;
-        //This function is called at the start of the game
-        
+        // single AudioSource 
+        audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.loop = true;  // sound plays while key is held
+
+        // pull audio from Resource folder
+        ascentClip = Resources.Load<AudioClip>("Audio/ascentJet");
+        descentClip = Resources.Load<AudioClip>("Audio/descentJet");
     }
 
     void Update()
     {
-        //This function is called every frame; 60 frames/second
         Movement();
         Shooting();
-
     }
 
     void Shooting()
     {
-        //if the player presses the SPACE key, create a projectile
-        if(Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
             Instantiate(bulletPrefab, transform.position + new Vector3(0, 1, 0), Quaternion.identity);
         }
@@ -46,24 +43,55 @@ public class Player : MonoBehaviour
 
     void Movement()
     {
-        //Read the input from the player
         horizontalInput = Input.GetAxis("Horizontal");
-        //inverted due to orientation bug
         verticalInput = -Input.GetAxis("Vertical");
-        //Move the player
+
+        // move player
         transform.Translate(new Vector3(horizontalInput, verticalInput, 0) * Time.deltaTime * playerSpeed);
-        //Player leaves the screen horizontally
-        if(transform.position.x > horizontalScreenLimit || transform.position.x <= -horizontalScreenLimit)
-        {
+
+        // screen limit
+        if (transform.position.x > horizontalScreenLimit || transform.position.x <= -horizontalScreenLimit)
             transform.position = new Vector3(transform.position.x * -1, transform.position.y, 0);
-        }
-        //vertical clamp settup + bottom limit
-        float bottomLimit  = -3.40f;
+
+        float bottomLimit = -3.4f;
         float topLimit = 0f;
         float clampVert = Mathf.Clamp(transform.position.y, bottomLimit, topLimit);
-
-        //apply clamp to user
         transform.position = new Vector3(transform.position.x, clampVert, 0);
+
+        // sound
+        //return;
+        if (Input.GetKey(KeyCode.W))
+        {
+            if (audioSource.clip != ascentClip)
+            {
+                audioSource.clip = ascentClip;
+                audioSource.Play();
+            }
+        }
+        else if (Input.GetKey(KeyCode.S))
+        {
+            if (audioSource.clip != descentClip)
+            {
+                audioSource.clip = descentClip;
+                audioSource.Play();
+            }
+        }
+        else
+        {
+            if (audioSource.isPlaying)
+                audioSource.Stop();
+        }
+	Debug.Log("Hi");
     }
 
+    public void OnTriggerEnter(Collider other)
+    {
+	// Check if player touched it
+        if (other.gameObject.CompareTag("Shield"))
+        {
+            shieldObj.SetActive(true);
+	    ShieldPlayer shieldScript = shieldObj.GetComponent<ShieldPlayer>();
+	    StartCoroutine(shieldScript.TurnOffShield());
+        }
+    } 
 }
